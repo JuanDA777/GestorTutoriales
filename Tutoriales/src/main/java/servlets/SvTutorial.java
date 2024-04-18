@@ -5,6 +5,7 @@
 package servlets;
 
 import com.mycompany.tutoriales.GestionarTutorial;
+import static com.mycompany.tutoriales.GestionarTutorial.insertarTutorial;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.CallableStatement;
@@ -45,51 +46,30 @@ public class SvTutorial extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         int idTutorial = Integer.parseInt(request.getParameter("idTutorial"));
+         GestionarTutorial.eliminarTutorial(idTutorial);
+         response.sendRedirect("index.jsp"); // Redirigir a una página de éxito
+
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Establecer la conexión a la base de datos
-        Connection conn = tutorial.establecerConexion();
+        // Obtener los parámetros del formulario
+        String titulo = request.getParameter("titulo");
+        int prioridad = Integer.parseInt(request.getParameter("prioridad"));
+        String url = request.getParameter("url");
+        int categoria = Integer.parseInt(request.getParameter("categoria"));
 
-        if (conn != null) {
-            try {
-                // Llamar al procedimiento almacenado
-                CallableStatement stmt = conn.prepareCall("{call InsertarTutorial(?, ?, ?, ?)}");
+        // Llamar al método para insertar el tutorial en la base de datos
+        boolean exito = insertarTutorial(titulo, prioridad, url, categoria);
 
-                // Obtener los parámetros del formulario
-                String titulo = request.getParameter("titulo");
-                int prioridad = Integer.parseInt(request.getParameter("prioridad"));
-                String url = request.getParameter("url");
-                int categoria = Integer.parseInt(request.getParameter("categoria"));
-
-                // Establecer parámetros del procedimiento almacenado
-                stmt.setString(1, titulo);
-                stmt.setInt(2, prioridad);
-                stmt.setString(3, url);
-                stmt.setInt(4, categoria);
-
-                // Ejecutar el procedimiento almacenado
-                stmt.execute();
-
-                // Cerrar la conexión
-                conn.close();
-
-                // Redirigir a alguna página de éxito o mostrar un mensaje de éxito
-                response.sendRedirect("index.jsp"); // Redirigir a una página de éxito
-                
-                System.out.println("Conexion exitosa");
-            } catch (SQLException e) {
-                // Manejar cualquier error de SQL
-                e.printStackTrace(); // Esto imprimirá la traza de la excepción en la consola del servidor
-                // Puedes manejar el error de otra manera, como mostrar un mensaje de error en la página
-                response.getWriter().println("Error al agregar pruebe de nuevo"); // Esto mostrará un mensaje de error en la página
-            }
+        if (exito) {
+            // Redirigir a alguna página de éxito o mostrar un mensaje de éxito
+            response.sendRedirect("index.jsp"); // Redirigir a una página de éxito
         } else {
-            // Manejar el caso en que no se pueda obtener una conexión a la base de datos
-            response.getWriter().println("No se pudo establecer una conexión a la base de datos."); // Esto mostrará un mensaje de error en la página
+            // Mostrar un mensaje de error en la página
+            response.getWriter().println("Error al agregar, por favor, intente de nuevo.");
         }
     }
 
