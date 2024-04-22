@@ -4,8 +4,7 @@
  */
 package servlets;
 
-import com.mycompany.tutoriales.GestionarTutorial;
-import static com.mycompany.tutoriales.GestionarTutorial.insertarTutorial;
+import com.mycompany.tutoriales.GestionarCategoria;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -18,11 +17,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author juand
  */
-@WebServlet(name = "SvTutorial", urlPatterns = {"/SvTutorial"})
-public class SvTutorial extends HttpServlet {
+@WebServlet(name = "SvCategoria", urlPatterns = {"/SvCategoria"})
+public class SvCategoria extends HttpServlet {
 
-    GestionarTutorial tutorial = new GestionarTutorial();
-    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -31,10 +28,10 @@ public class SvTutorial extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SvTutorial</title>");
+            out.println("<title>Servlet SvCategoria</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SvTutorial at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SvCategoria at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -43,38 +40,33 @@ public class SvTutorial extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         int idTutorial = Integer.parseInt(request.getParameter("idTutorial"));
-         GestionarTutorial.eliminarTutorial(idTutorial);
-         response.sendRedirect("tutoriales.jsp"); // Redirigir a una página de éxito
-
+        processRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Obtener los parámetros del formulario
-        String titulo = request.getParameter("titulo");
-        int prioridad = Integer.parseInt(request.getParameter("prioridad"));
-        String url = request.getParameter("url");
-        int categoria = Integer.parseInt(request.getParameter("categoria"));
 
-        // Llamar al método para insertar el tutorial en la base de datos
-        boolean exito = insertarTutorial(titulo, prioridad, url, categoria);
+        // Obtener el parámetro "categoria" del formulario JSP
+        String categoria = request.getParameter("categoria");
 
-        if (exito) {
-            // Redirigir a alguna página de éxito o mostrar un mensaje de éxito
-            response.sendRedirect("tutoriales.jsp"); // Redirigir a una página de éxito
+        // Verificar si la categoría no está vacía
+        if (categoria != null && !categoria.isEmpty()) {
+            // Llamar al método para agregar la categoría en la base de datos
+            GestionarCategoria.agregarCategoria(categoria);
+
+            // Redirigir de vuelta a la página principal después de agregar la categoría
+            response.sendRedirect("categoria.jsp");
         } else {
-            // Mostrar un mensaje de error en la página
-            response.getWriter().println("Error al agregar, por favor, intente de nuevo.");
+            // Si la categoría está vacía, mostrar un mensaje de error
+            response.getWriter().println("Error: El nombre de la categoría no puede estar vacío.");
         }
+
     }
-
-
 
     @Override
     public String getServletInfo() {
         return "Short description";
-    }
+    }// </editor-fold>
 
 }

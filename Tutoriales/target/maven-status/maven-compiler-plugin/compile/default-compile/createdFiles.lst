@@ -1,5 +1,8 @@
-com\mycompany\tutoriales\resources\JavaEE8Resource.class
-servlets\SvEditar.class
 com\mycompany\tutoriales\GestionarTutorial.class
 com\mycompany\tutoriales\JAXRSConfiguration.class
+servlets\SvCategoria.class
 servlets\SvTutorial.class
+com\mycompany\tutoriales\resources\JavaEE8Resource.class
+servlets\SvEditar.class
+servlets\SvCambiarEstado.class
+com\mycompany\tutoriales\GestionarCategoria.class

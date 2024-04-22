@@ -76,7 +76,7 @@ public class GestionarTutorial {
             // Llamada al método estático de la clase GestionarTutorial
             Connection conn = GestionarTutorial.establecerConexion();
             if (conn != null) {
-                String sql = "SELECT t.idTutorial, t.titulo, t.prioridad, c.categoria, t.URL FROM tutorial t JOIN categoria c ON t.idCategoria = c.idCategoria";
+                String sql = "SELECT t.idTutorial, t.titulo, t.prioridad, c.categoria, t.URL, t.estado FROM tutorial t JOIN categoria c ON t.idCategoria = c.idCategoria";
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql);
 
@@ -86,36 +86,41 @@ public class GestionarTutorial {
                     int prioridad = rs.getInt("prioridad");
                     String categoria = rs.getString("categoria");
                     String url = rs.getString("URL");
-                    
+                    String estado = rs.getString("estado");
+
                     int valorCategoria = obtenerValorCategoria(categoria);
-                    
+
                     html += "<tr>";
                     html += "<td>" + titulo + "</td>";
                     html += "<td>" + prioridad + "</td>";
                     html += "<td>" + categoria + "</td>";
-                    html += "<td><a href='" + url + "'>Enlace</a></td>";
+                    html += "<td>" + estado + "</td>"; // Agregar el estado a la salida HTML
+                    html += "<td><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"window.open('" + url + "', '_blank')\"><i class=\"fas fa-link\"></i> Enlace</button></td>";
+                    html += "<td><button type=\"button\" class=\"btn btn-secondary btn-sm text-white cambiar-estado-btn\" data-id=\"" + idTutorial + "\">Cambiar Estado <i class=\"fas fa-thumbs-up\"></i></button></td>";
                     html += "<td><a href=\"#\" class=\"btn btn-primary btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#editModal\" title=\"Editar\" "
-                        + "data-id=\"" + idTutorial + "\" "
-                        + "data-titulo=\"" + titulo + "\" "
-                        + "data-prioridad=\"" + prioridad + "\" "
-                        + "data-url=\"" + url + "\" "
-                        + "data-categoria=\"" + valorCategoria + "\">"
-                        + "Editar <i class=\"fas fa-edit\"></i>"
-                        + "</a></td>";
+                            + "data-id=\"" + idTutorial + "\" "
+                            + "data-titulo=\"" + titulo + "\" "
+                            + "data-prioridad=\"" + prioridad + "\" "
+                            + "data-url=\"" + url + "\" "
+                            + "data-categoria=\"" + valorCategoria + "\" "
+                            + "data-estado=\"" + estado + "\">" // Agregar el estado al atributo data-estado
+                            + "Editar <i class=\"fas fa-edit\"></i>"
+                            + "</a></td>";
                     html += "<td><button type=\"button\" title=\"Eliminar\" class=\"btn btn-danger btn-sm\" onclick=\"confirmarEliminacion(" + idTutorial + ")\">Eliminar <i class=\"fas fa-trash\"></i></button></td>";
                     html += "</tr>";
-                    
+
                 }
-                
+
                 conn.close();
             } else {
-                html = "<tr><td colspan='6'>No se pudo establecer una conexión a la base de datos.</td></tr>";
+                html = "<tr><td colspan='7'>No se pudo establecer una conexión a la base de datos.</td></tr>";
             }
         } catch (Exception e) {
-            html = "<tr><td colspan='6'>Error al obtener los tutoriales: " + e.getMessage() + "</td></tr>";
+            html = "<tr><td colspan='7'>Error al obtener los tutoriales: " + e.getMessage() + "</td></tr>";
         }
         return html;
     }
+
 
     public static void eliminarTutorial(int idTutorial) {
         try {
@@ -173,7 +178,7 @@ public class GestionarTutorial {
         return false;
     }
 
-    // Método para obtener el valor numérico de la categoría a partir de su nombre
+    
     // Método para obtener el valor numérico de la categoría a partir de su nombre
     public static int obtenerValorCategoria(String nombreCategoria) {
         // Mapa para mapear el nombre de la categoría a su valor numérico
@@ -203,7 +208,125 @@ public class GestionarTutorial {
             return -1; // Valor predeterminado en caso de que no se encuentre la categoría
         }
     }
+    public static String obtenerEstadoTutorial(int idTutorial) {
+        String estado = ""; // Variable para almacenar el estado del tutorial
+
+        try {
+            Connection conn = establecerConexion();
+            if (conn != null) {
+                String sql = "SELECT estado FROM tutorial WHERE idTutorial = ?";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setInt(1, idTutorial);
+                ResultSet rs = pstmt.executeQuery();
+
+                // Verificar si se obtuvo un resultado
+                if (rs.next()) {
+                    estado = rs.getString("estado");
+                }
+
+                conn.close();
+            } else {
+                System.out.println("No se pudo establecer una conexión a la base de datos.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener el estado del tutorial: " + e.getMessage());
+        }
+
+        return estado;
+    }
+
+    public static boolean cambiarEstadoTutorial(int idTutorial, String nuevoEstado) {
+        try {
+            Connection conn = establecerConexion();
+            if (conn != null) {
+                String sql = "UPDATE tutorial SET estado = ? WHERE idTutorial = ?";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, nuevoEstado);
+                pstmt.setInt(2, idTutorial);
+                pstmt.executeUpdate();
+                conn.close();
+                return true;
+            } else {
+                System.out.println("No se pudo establecer una conexión a la base de datos.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al cambiar el estado del tutorial: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    public static String obtenerTutorialesOrdenados(String orden) {
+        String html = "";
+        try {
+            Connection conn = establecerConexion();
+            if (conn != null) {
+                String sql = "SELECT t.idTutorial, t.titulo, t.prioridad, c.categoria, t.URL, t.estado FROM tutorial t JOIN categoria c ON t.idCategoria = c.idCategoria";
+
+                // Agregar ordenamiento según el parámetro 'orden'
+                if (orden != null && !orden.isEmpty()) {
+                    switch (orden) {
+                        case "tituloAsc":
+                            sql += " ORDER BY t.titulo ASC";
+                            break;
+                        case "tituloDesc":
+                            sql += " ORDER BY t.titulo DESC";
+                            break;
+                        case "prioridad":
+                            sql += " ORDER BY t.prioridad ASC";
+                            break;
+                        case "categoria":
+                            sql += " ORDER BY c.categoria ASC";
+                            break;
+                        case "estado":
+                            sql += " ORDER BY t.estado ASC";
+                            break;
+                        default:
+                            // Si no se especifica un orden válido, mantener sin ordenar
+                            break;
+                    }
+                }
+
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+
+                while (rs.next()) {
+                    int idTutorial = rs.getInt("idTutorial");
+                    String titulo = rs.getString("titulo");
+                    int prioridad = rs.getInt("prioridad");
+                    String categoria = rs.getString("categoria");
+                    String url = rs.getString("URL");
+                    String estado = rs.getString("estado");
+
+                    html += "<tr>";
+                    html += "<td>" + titulo + "</td>";
+                    html += "<td>" + prioridad + "</td>";
+                    html += "<td>" + categoria + "</td>";
+                    html += "<td>" + estado + "</td>"; // Agregar el estado a la salida HTML
+                    html += "<td><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"window.location.href='" + url + "'\"><i class=\"fas fa-link\"></i> Enlace</button></td>";
+                    html += "<td><button type=\"button\" class=\"btn btn-secondary btn-sm text-white cambiar-estado-btn\" data-id=\"" + idTutorial + "\">Cambiar Estado <i class=\"fas fa-thumbs-up\"></i></button></td>";
+                    html += "<td><a href=\"#\" class=\"btn btn-primary btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#editModal\" title=\"Editar\" "
+                            + "data-id=\"" + idTutorial + "\" "
+                            + "data-titulo=\"" + titulo + "\" "
+                            + "data-prioridad=\"" + prioridad + "\" "
+                            + "data-url=\"" + url + "\" "
+                            + "data-categoria=\"" + categoria + "\" "
+                            + "data-estado=\"" + estado + "\">" // Agregar el estado al atributo data-estado
+                            + "Editar <i class=\"fas fa-edit\"></i>"
+                            + "</a></td>";
+                    html += "<td><button type=\"button\" title=\"Eliminar\" class=\"btn btn-danger btn-sm\" onclick=\"confirmarEliminacion(" + idTutorial + ")\">Eliminar <i class=\"fas fa-trash\"></i></button></td>";
+                    html += "</tr>";
+                }
+
+                conn.close();
+            } else {
+                html = "<tr><td colspan='7'>No se pudo establecer una conexión a la base de datos.</td></tr>";
+            }
+        } catch (Exception e) {
+            html = "<tr><td colspan='7'>Error al obtener los tutoriales: " + e.getMessage() + "</td></tr>";
+        }
+        return html;
+    }
 
 
-
+    
 }

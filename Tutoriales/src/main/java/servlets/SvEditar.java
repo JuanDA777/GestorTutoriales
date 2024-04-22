@@ -53,7 +53,15 @@ public class SvEditar extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        // Obtener el parámetro 'orden' de la solicitud
+        String orden = request.getParameter("orden");
+
+        // Obtener la cadena HTML ordenada
+        String html = GestionarTutorial.obtenerTutorialesOrdenados(orden);
+
+        // Configurar la solicitud para redireccionar al nuevo JSP
+        request.setAttribute("tablaTutoriales", html);
+        request.getRequestDispatcher("/ordenamiento.jsp").forward(request, response);
     }
 
     @Override
@@ -64,7 +72,7 @@ public class SvEditar extends HttpServlet {
         String titulo = request.getParameter("editTitulo");
         String prioridadStr = request.getParameter("editPrioridad");
         String url = request.getParameter("editUrl");
-        String idCategoriaStr = request.getParameter("editCategoria");
+        String idCategoriaStr = request.getParameter("categoria"); // Cambio aquí
 
         try {
             // Convertir los parámetros a números enteros
@@ -77,7 +85,7 @@ public class SvEditar extends HttpServlet {
 
             if (exito) {
                 // Redirigir a una página de confirmación o a donde necesites
-                response.sendRedirect("index.jsp");
+                response.sendRedirect("tutoriales.jsp");
             } else {
                 // Manejar el caso de error al editar el tutorial
                 response.getWriter().println("Error al editar el tutorial.");
@@ -86,33 +94,9 @@ public class SvEditar extends HttpServlet {
             // Manejar el caso de parámetros no válidos
             response.getWriter().println("Uno o más parámetros no son números enteros válidos.");
         }
-    
+
     }
 
-    private void actualizarTutorial(int idTutorial, String titulo, int prioridad, String url, int idCategoria) {
-        String urlConexion = "jdbc:mysql://localhost:3306/GestorTutorial";
-        String usuario = "tu_usuario";
-        String contraseña = "123456";
-
-        try {
-            Connection conexion = DriverManager.getConnection(urlConexion, usuario, contraseña);
-
-            String consultaSQL = "CALL EditarTutorial(?, ?, ?, ?, ?)";
-
-            PreparedStatement declaracion = conexion.prepareStatement(consultaSQL);
-            declaracion.setInt(1, idTutorial);
-            declaracion.setString(2, titulo);
-            declaracion.setInt(3, prioridad);
-            declaracion.setString(4, url);
-            declaracion.setInt(5, idCategoria);
-
-            declaracion.executeUpdate();
-
-            conexion.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public String getServletInfo() {

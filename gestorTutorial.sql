@@ -29,8 +29,18 @@ CREATE TABLE tutorial (
   idCategoria INT,
   FOREIGN KEY (idCategoria) REFERENCES categoria(idCategoria)ON DELETE CASCADE
 );
+ALTER TABLE tutorial
+ADD COLUMN estado ENUM('por revisar', 'revisado') NOT NULL DEFAULT 'por revisar';
 
 DELIMITER //
+
+CREATE PROCEDURE InsertarCategoria (
+    IN p_categoria VARCHAR(30) -- Nombre de la nueva categoría a insertar
+)
+BEGIN
+    -- Insertar la nueva categoría
+    INSERT INTO categoria (categoria) VALUES (p_categoria);
+END //
 
 CREATE PROCEDURE InsertarTutorial (
     IN p_titulo VARCHAR(100),
@@ -43,10 +53,6 @@ BEGIN
     INSERT INTO tutorial (titulo, prioridad, URL, idCategoria) 
     VALUES (p_titulo, p_prioridad, p_url, p_idCategoria);
 END //
-
-DELIMITER ;	
-
-DELIMITER //
 
 CREATE PROCEDURE EditarTutorial (
     IN p_idTutorial INT,
