@@ -302,7 +302,7 @@ public class GestionarTutorial {
                     html += "<td>" + prioridad + "</td>";
                     html += "<td>" + categoria + "</td>";
                     html += "<td>" + estado + "</td>"; // Agregar el estado a la salida HTML
-                    html += "<td><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"window.location.href='" + url + "'\"><i class=\"fas fa-link\"></i> Enlace</button></td>";
+                    html += "<td><button type=\"button\" class=\"btn btn-success btn-sm\" onclick=\"window.open('" + url + "', '_blank')\"><i class=\"fas fa-link\"></i> Enlace</button></td>";
                     html += "<td><button type=\"button\" class=\"btn btn-secondary btn-sm text-white cambiar-estado-btn\" data-id=\"" + idTutorial + "\">Cambiar Estado <i class=\"fas fa-thumbs-up\"></i></button></td>";
                     html += "<td><a href=\"#\" class=\"btn btn-primary btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#editModal\" title=\"Editar\" "
                             + "data-id=\"" + idTutorial + "\" "

@@ -88,15 +88,17 @@ public class GestionarCategoria {
 
                 html.append("<tr>");
                 html.append("<td>").append(idCategoria).append("</td>");
-                html.append("<td>").append(categoria).append("</td>");
-                html.append("<td>");
-                html.append("<button type=\"button\" class=\"btn btn-primary btn-sm\" data-toggle=\"modal\" data-target=\"#editModal").append(idCategoria).append("\">Editar</button>");
-                
+                html.append("<td>").append(categoria).append("</td>");                
+                html.append( "<td><a href=\"#\" class=\"btn btn-primary btn-sm\" data-bs-toggle=\"modal\" data-bs-target=\"#editarCategoria\" title=\"Editar\" "
+                            + "data-id=\"" + idCategoria + "\">"
+                            + "Editar <i class=\"fas fa-edit\"></i>"
+                            + "</a></td>");
                 html.append("</td>");
                 html.append("<td>");
-                html.append("<button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"eliminarCategoria(").append(idCategoria).append(")\">Eliminar</button>");
+                html.append("<button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"eliminarCategoria(").append(idCategoria).append(")\">Eliminar <i class=\"fas fa-trash\"></i></button>");
                 html.append("</td>");
                 html.append("</tr>");
+                
             }
         } catch (SQLException e) {
             System.out.println("Error al obtener categorías: " + e.getMessage());
@@ -118,6 +120,83 @@ public class GestionarCategoria {
         }
 
         return html.toString();
+    }
+    
+    public static void eliminarCategoria(int idCategoria) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Obtener la conexión a la base de datos
+            conn = GestionarCategoria.establecerConexion();
+
+            // Consulta SQL para eliminar la categoría
+            String sql = "CALL EliminarCategoria(?)";
+
+            // Preparar la declaración SQL
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, idCategoria);
+
+            // Ejecutar la consulta
+            stmt.executeUpdate();
+
+            System.out.println("Categoría eliminada exitosamente");
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar categoría: " + e.getMessage());
+        } finally {
+            // Cerrar el PreparedStatement y la conexión
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+    }
+    
+    public static void editarCategoria(int idCategoria, String nuevaCategoria) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecer conexión a la base de datos
+            conn = establecerConexion();
+
+            // Consulta SQL para editar la categoría
+            String sql = "UPDATE categoria SET categoria = ? WHERE idCategoria = ?";
+
+            // Preparar la declaración SQL
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, nuevaCategoria);
+            stmt.setInt(2, idCategoria);
+
+            // Ejecutar la consulta
+            int filasActualizadas = stmt.executeUpdate();
+
+            if (filasActualizadas > 0) {
+                System.out.println("Categoría actualizada exitosamente");
+            } else {
+                System.out.println("No se encontró la categoría con el ID proporcionado");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al editar categoría: " + e.getMessage());
+        } finally {
+            // Cerrar PreparedStatement y conexión
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
     }
 
 }

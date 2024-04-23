@@ -35,13 +35,13 @@
             </select>
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-8">
             <label for="url" class="form-label">URL de YouTube:</label>
             <input type="text" class="form-control" id="url" name="url" required>
         </div>
 
         <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Enviar</button>
+            <button type="submit" class="btn btn-light">Agregar tutorial</button>
         </div>
     </form>
 </section>

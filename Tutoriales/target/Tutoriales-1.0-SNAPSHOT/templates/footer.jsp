@@ -59,7 +59,38 @@
         $('#confirmDeleteBtn').data('id', idTutorial); // Almacenar el ID del tutorial en el botón de eliminación
     }
     
+    function eliminarCategoria(idCategoria) {
+        // Mostrar la modal de confirmación
+        $('#confirmarEliminarModal').modal('show');
+
+        // Configurar el evento clic para el botón de confirmar eliminación
+        $('#confirmarEliminarBtn').on('click', function() {
+            // Redireccionar a la URL de eliminación solo si se confirma la eliminación
+            window.location.href = "SvCategoria?idCategoria=" + idCategoria;
+        });
+    }
+
+
+    // Función para llenar el campo de la modal con el valor de la categoría correspondiente
+    $('#editarCategoria').on('show.bs.modal', function (event) {
+        // Obtener el botón que activó la modal
+        var button = $(event.relatedTarget);
+        // Extraer el ID de la categoría y el nombre de la categoría del botón
+        var idCategoria = button.data('id');
+        var categoria = button.closest('tr').find('td:eq(1)').text(); // Obtener el nombre de la categoría de la fila
+        
+        // Configurar el valor del campo de la modal con el nombre de la categoría
+        var modal = $(this);
+        modal.find('.modal-body #categoria').val(categoria);
+        
+        // Agregar el ID de la categoría como un campo oculto en el formulario de la modal
+        modal.find('.modal-body #idCategoria').val(idCategoria);
+    });
+
+
+
 </script>
+    
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 

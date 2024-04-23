@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author juand
  */
-@WebServlet(name = "SvCategoria", urlPatterns = {"/SvCategoria"})
-public class SvCategoria extends HttpServlet {
+@WebServlet(name = "SvEditarCategoria", urlPatterns = {"/SvEditarCategoria"})
+public class SvEditarCategoria extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -28,10 +28,10 @@ public class SvCategoria extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SvCategoria</title>");
+            out.println("<title>Servlet SvEditarCategoria</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SvCategoria at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet SvEditarCategoria at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -40,31 +40,32 @@ public class SvCategoria extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int idCategoria = Integer.parseInt(request.getParameter("idCategoria"));
-        GestionarCategoria.eliminarCategoria(idCategoria);
-        response.sendRedirect("categoria.jsp"); // Redirigir a una página de éxito
+        processRequest(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Obtener los parámetros del formulario
+        String nuevaCategoria = request.getParameter("categoria");
+        String idCategoriaParam = request.getParameter("idCategoria");
 
-        // Obtener el parámetro "categoria" del formulario JSP
-        String categoria = request.getParameter("categoria");
+        // Verificar si idCategoriaParam no es nulo ni vacío
+        if (idCategoriaParam != null && !idCategoriaParam.isEmpty()) {
+            int idCategoria = Integer.parseInt(idCategoriaParam);
+            System.out.println("categoria: " + nuevaCategoria);
+            System.out.println("Idcategoria: " + idCategoria);
+            // Llamar al método para editar la categoría
+            GestionarCategoria.editarCategoria(idCategoria, nuevaCategoria);
 
-        // Verificar si la categoría no está vacía
-        if (categoria != null && !categoria.isEmpty()) {
-            // Llamar al método para agregar la categoría en la base de datos
-            GestionarCategoria.agregarCategoria(categoria);
-
-            // Redirigir de vuelta a la página principal después de agregar la categoría
+            // Redirigir a la página de categoría
             response.sendRedirect("categoria.jsp");
         } else {
-            // Si la categoría está vacía, mostrar un mensaje de error
-            response.getWriter().println("Error: El nombre de la categoría no puede estar vacío.");
+            // Manejar el caso en el que idCategoria es nulo o vacío
+            // Puedes mostrar un mensaje de error o redirigir a una página de error
+            response.sendRedirect("pagina-de-error.jsp");
         }
-
     }
+
 
     @Override
     public String getServletInfo() {

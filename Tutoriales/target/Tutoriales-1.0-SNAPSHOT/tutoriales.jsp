@@ -58,7 +58,7 @@
         </div>
 
         <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Enviar</button>
+            <button type="submit" class="btn btn-light">Agregar tutorial</button>
         </div>
     </form>
 </section>

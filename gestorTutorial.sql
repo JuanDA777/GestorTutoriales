@@ -71,4 +71,12 @@ BEGIN
     WHERE idTutorial = p_idTutorial;
 END //
 
+CREATE PROCEDURE EliminarCategoria (
+    IN p_idCategoria INT -- ID de la categoría a eliminar
+)
+BEGIN
+    -- Eliminar la categoría
+    DELETE FROM categoria WHERE idCategoria = p_idCategoria;
+END //
+
 DELIMITER ;

@@ -1,21 +1,24 @@
 <%@page import="com.mycompany.tutoriales.GestionarCategoria"%>
 <%@include file="templates/header.jsp"%>
+
 <section class="container my-2 bg-dark w-50 text-light p-2">
     <div class="container-fluid bg-dark text-light py-3">
         <header class="text-center">
-            <h1 class="display-6">Agregar de categoria</h1>
+            <h1 class="display-6">Agregar Categoría</h1>
         </header>
     </div>
-    <form class="row g-3 p-3" action="SvCategoria" method="POST"> <!-- Cambiado a SvCategoria -->
+    
+    <form class="row g-3 p-3" action="SvCategoria" method="POST">
         <div class="col-md-8">
             <label for="categoria" class="form-label">Nueva Categoría:</label>
             <input type="text" class="form-control" id="categoria" name="categoria" required>
         </div>
         <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Agregar Categoría</button>
+            <button type="submit" class="btn btn-light">Agregar Categoría</button>
         </div>
     </form>
 </section>
+
 <div class="container mt-5">
     <h2>Tutoriales</h2>
     <div class="table-responsive">
@@ -34,43 +37,51 @@
         </table>
     </div>
 </div>
-<div class="modal fade" id="editModal   " tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="confirmarEliminarModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Editar Tutorial</h5>
+                <h5 class="modal-title" id="confirmarEliminarModalLabel">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editTutorialForm" action="SvEditar" method="POST">
-                    <div class="mb-3">
-                        <label for="editTitulo" class="form-label">Título</label>
-                        <input type="text" class="form-control" id="editTitulo" name="editTitulo">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editPrioridad" class="form-label">Prioridad</label>
-                        <input type="number" class="form-control" id="editPrioridad" name="editPrioridad">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUrl" class="form-label">URL</label>
-                        <input type="text" class="form-control" id="editUrl" name="editUrl">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editCategoria" class="form-label">Categoría</label>
-                        <select class="form-select" id="categoria" name="categoria" required>
-
-                        </select>
-                    </div>
-                    <input type="hidden" id="editIdTutorial" name="editIdTutorial">
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-primary">Enviar</button>
-                    </div>
-                </form>
+                <p>¿Está seguro de que desea eliminar esta categoría? </p>
+                <p>Si esta categoria tiene tutoriales viculados tambien seran eliminados</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmarEliminarBtn">Eliminar</button>
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" id="editarCategoria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Editar categoria</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-8">
+                    <form action="SvEditarCategoria" method="post">
+                        <!-- Campo oculto para almacenar el ID de la categoría -->
+                        <input type="hidden" id="idCategoria" name="idCategoria" value="">
+                        <div class="mb-3">
+                            <label for="categoria" class="form-label">Categoría</label>
+                            <input type="text" class="form-control" id="categoria" name="categoria" placeholder="Ingresa la categoría">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <%@include file="templates/footer.jsp"%>
+
